@@ -1,0 +1,300 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local CoreGui = game:GetService("CoreGui")
+
+local LocalPlayer = Players.LocalPlayer
+local AutoM1Enabled = false
+local AutoEquipEnabled = true
+local AttackDelay = 0.08
+local LastAttack = 0
+
+local ParentGui = pcall(function() return CoreGui.Name end) and CoreGui or LocalPlayer:WaitForChild("PlayerGui")
+if ParentGui:FindFirstChild("Zenxhub_SaberLineage") then
+    ParentGui:FindFirstChild("Zenxhub_SaberLineage"):Destroy()
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "Zenxhub_SaberLineage"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = ParentGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 260, 0, 185)
+MainFrame.Position = UDim2.new(0.5, -130, 0.4, -92)
+MainFrame.BackgroundColor3 = Color3.fromRGB(13, 13, 22)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.Parent = MainFrame
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Thickness = 2
+MainStroke.Color = Color3.fromRGB(0, 255, 242)
+MainStroke.Parent = MainFrame
+
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 36)
+Header.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 10)
+HeaderCorner.Parent = Header
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -40, 1, 0)
+Title.Position = UDim2.new(0, 12, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "ZENXHUB // SABER LINEAGE"
+Title.TextColor3 = Color3.fromRGB(255, 0, 128)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 13
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Header
+
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 28, 0, 28)
+MinimizeBtn.Position = UDim2.new(1, -32, 0, 4)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+MinimizeBtn.Text = "-"
+MinimizeBtn.TextColor3 = Color3.fromRGB(0, 255, 242)
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.TextSize = 16
+MinimizeBtn.Parent = Header
+
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 6)
+MinCorner.Parent = MinimizeBtn
+
+local ToggleM1Btn = Instance.new("TextButton")
+ToggleM1Btn.Size = UDim2.new(1, -24, 0, 38)
+ToggleM1Btn.Position = UDim2.new(0, 12, 0, 46)
+ToggleM1Btn.BackgroundColor3 = Color3.fromRGB(25, 25, 42)
+ToggleM1Btn.Text = "AUTO M1: OFF"
+ToggleM1Btn.TextColor3 = Color3.fromRGB(255, 75, 110)
+ToggleM1Btn.Font = Enum.Font.GothamBold
+ToggleM1Btn.TextSize = 14
+ToggleM1Btn.Parent = MainFrame
+
+local BtnCorner1 = Instance.new("UICorner")
+BtnCorner1.CornerRadius = UDim.new(0, 8)
+BtnCorner1.Parent = ToggleM1Btn
+
+local BtnStroke1 = Instance.new("UIStroke")
+BtnStroke1.Thickness = 1.5
+BtnStroke1.Color = Color3.fromRGB(255, 0, 128)
+BtnStroke1.Parent = ToggleM1Btn
+
+local ToggleEquipBtn = Instance.new("TextButton")
+ToggleEquipBtn.Size = UDim2.new(1, -24, 0, 34)
+ToggleEquipBtn.Position = UDim2.new(0, 12, 0, 92)
+ToggleEquipBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 42)
+ToggleEquipBtn.Text = "AUTO EQUIP SABER: ON"
+ToggleEquipBtn.TextColor3 = Color3.fromRGB(0, 255, 242)
+ToggleEquipBtn.Font = Enum.Font.GothamSemibold
+ToggleEquipBtn.TextSize = 12
+ToggleEquipBtn.Parent = MainFrame
+
+local BtnCorner2 = Instance.new("UICorner")
+BtnCorner2.CornerRadius = UDim.new(0, 8)
+BtnCorner2.Parent = ToggleEquipBtn
+
+local SpeedFrame = Instance.new("Frame")
+SpeedFrame.Size = UDim2.new(1, -24, 0, 36)
+SpeedFrame.Position = UDim2.new(0, 12, 0, 134)
+SpeedFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+SpeedFrame.Parent = MainFrame
+
+local SpeedCorner = Instance.new("UICorner")
+SpeedCorner.CornerRadius = UDim.new(0, 8)
+SpeedCorner.Parent = SpeedFrame
+
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(0.6, 0, 1, 0)
+SpeedLabel.Position = UDim2.new(0, 10, 0, 0)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "Delay: 0.08s"
+SpeedLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
+SpeedLabel.Font = Enum.Font.GothamSemibold
+SpeedLabel.TextSize = 12
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.Parent = SpeedFrame
+
+local MinusSpeed = Instance.new("TextButton")
+MinusSpeed.Size = UDim2.new(0, 28, 0, 26)
+MinusSpeed.Position = UDim2.new(1, -64, 0, 5)
+MinusSpeed.BackgroundColor3 = Color3.fromRGB(35, 35, 60)
+MinusSpeed.Text = "-"
+MinusSpeed.TextColor3 = Color3.fromRGB(0, 255, 242)
+MinusSpeed.Font = Enum.Font.GothamBold
+MinusSpeed.TextSize = 14
+MinusSpeed.Parent = SpeedFrame
+
+local MinusCorner = Instance.new("UICorner")
+MinusCorner.CornerRadius = UDim.new(0, 6)
+MinusCorner.Parent = MinusSpeed
+
+local PlusSpeed = Instance.new("TextButton")
+PlusSpeed.Size = UDim2.new(0, 28, 0, 26)
+PlusSpeed.Position = UDim2.new(1, -32, 0, 5)
+PlusSpeed.BackgroundColor3 = Color3.fromRGB(35, 35, 60)
+PlusSpeed.Text = "+"
+PlusSpeed.TextColor3 = Color3.fromRGB(255, 0, 128)
+PlusSpeed.Font = Enum.Font.GothamBold
+PlusSpeed.TextSize = 14
+PlusSpeed.Parent = SpeedFrame
+
+local PlusCorner = Instance.new("UICorner")
+PlusCorner.CornerRadius = UDim.new(0, 6)
+PlusCorner.Parent = PlusSpeed
+
+local FloatBtn = Instance.new("TextButton")
+FloatBtn.Size = UDim2.new(0, 46, 0, 46)
+FloatBtn.Position = UDim2.new(0, 20, 0.5, -23)
+FloatBtn.BackgroundColor3 = Color3.fromRGB(13, 13, 22)
+FloatBtn.Text = "ZX"
+FloatBtn.TextColor3 = Color3.fromRGB(0, 255, 242)
+FloatBtn.Font = Enum.Font.GothamBlack
+FloatBtn.TextSize = 16
+FloatBtn.Visible = false
+FloatBtn.Parent = ScreenGui
+
+local FloatCorner = Instance.new("UICorner")
+FloatCorner.CornerRadius = UDim.new(1, 0)
+FloatCorner.Parent = FloatBtn
+
+local FloatStroke = Instance.new("UIStroke")
+FloatStroke.Thickness = 2
+FloatStroke.Color = Color3.fromRGB(255, 0, 128)
+FloatStroke.Parent = FloatBtn
+
+local function MakeDraggable(frame, handle)
+    local dragging, dragInput, dragStart, startPos
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    handle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+
+MakeDraggable(MainFrame, Header)
+MakeDraggable(FloatBtn, FloatBtn)
+
+ToggleM1Btn.MouseButton1Click:Connect(function()
+    AutoM1Enabled = not AutoM1Enabled
+    if AutoM1Enabled then
+        ToggleM1Btn.Text = "AUTO M1: ON"
+        ToggleM1Btn.TextColor3 = Color3.fromRGB(0, 255, 170)
+        BtnStroke1.Color = Color3.fromRGB(0, 255, 170)
+    else
+        ToggleM1Btn.Text = "AUTO M1: OFF"
+        ToggleM1Btn.TextColor3 = Color3.fromRGB(255, 75, 110)
+        BtnStroke1.Color = Color3.fromRGB(255, 0, 128)
+    end
+end)
+
+ToggleEquipBtn.MouseButton1Click:Connect(function()
+    AutoEquipEnabled = not AutoEquipEnabled
+    if AutoEquipEnabled then
+        ToggleEquipBtn.Text = "AUTO EQUIP SABER: ON"
+        ToggleEquipBtn.TextColor3 = Color3.fromRGB(0, 255, 242)
+    else
+        ToggleEquipBtn.Text = "AUTO EQUIP SABER: OFF"
+        ToggleEquipBtn.TextColor3 = Color3.fromRGB(160, 160, 180)
+    end
+end)
+
+MinusSpeed.MouseButton1Click:Connect(function()
+    AttackDelay = math.max(0.02, math.floor((AttackDelay - 0.02) * 100 + 0.5) / 100)
+    SpeedLabel.Text = "Delay: " .. string.format("%.2f", AttackDelay) .. "s"
+end)
+
+PlusSpeed.MouseButton1Click:Connect(function()
+    AttackDelay = math.min(1.0, math.floor((AttackDelay + 0.02) * 100 + 0.5) / 100)
+    SpeedLabel.Text = "Delay: " .. string.format("%.2f", AttackDelay) .. "s"
+end)
+
+MinimizeBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    FloatBtn.Visible = true
+end)
+
+FloatBtn.MouseButton1Click:Connect(function()
+    FloatBtn.Visible = false
+    MainFrame.Visible = true
+end)
+
+local function EquipWeapon(character)
+    if not AutoEquipEnabled then return end
+    if character:FindFirstChildOfClass("Tool") then return end
+    local backpack = LocalPlayer:FindFirstChild("Backpack")
+    if not backpack then return end
+    for _, item in ipairs(backpack:GetChildren()) do
+        if item:IsA("Tool") then
+            local lowerName = string.lower(item.Name)
+            if string.find(lowerName, "saber") or string.find(lowerName, "sword") or string.find(lowerName, "katana") or string.find(lowerName, "blade") then
+                character:FindFirstChildOfClass("Humanoid"):EquipTool(item)
+                return
+            end
+        end
+    end
+    local firstTool = backpack:FindFirstChildOfClass("Tool")
+    if firstTool and character:FindFirstChildOfClass("Humanoid") then
+        character:FindFirstChildOfClass("Humanoid"):EquipTool(firstTool)
+    end
+end
+
+local function PerformM1()
+    local character = LocalPlayer.Character
+    if not character then return end
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid or humanoid.Health <= 0 then return end
+
+    EquipWeapon(character)
+
+    local equippedTool = character:FindFirstChildOfClass("Tool")
+    if equippedTool then
+        pcall(function()
+            equippedTool:Activate()
+        end)
+    end
+
+    pcall(function()
+        local viewport = workspace.CurrentCamera.ViewportSize
+        local x, y = viewport.X / 2, viewport.Y / 2
+        VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 1)
+        VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 1)
+    end)
+end
+
+RunService.Heartbeat:Connect(function()
+    if AutoM1Enabled and (tick() - LastAttack >= AttackDelay) then
+        LastAttack = tick()
+        PerformM1()
+    end
+end)
